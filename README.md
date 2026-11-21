@@ -109,7 +109,6 @@ After the bot leaves, stop the process with Ctrl+C. The session defaults to 10 m
 | --- | --- |
 | `app/web.py` | Local launcher, session status, deadlines, and bot cleanup. |
 | `app/templates/index.html` | Meeting-URL form and request status. |
-| `app/meeting_url.py` | Validate links for the supported meeting platforms. |
 | [`app/agent.py`](app/agent.py) | Configure Realtime, discover the call, and compose the session. |
 | `app/meeting_agent.py` | Admit addressed requests and coordinate Realtime responses. |
 | `app/meeting_tools.py` | Nine actions, listening/mute state, and the last page URL. |

@@ -2,9 +2,11 @@
 
 import asyncio
 import logging
+import re
 import time
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
+from urllib.parse import urlsplit
 from uuid import uuid4
 
 import uvicorn
@@ -16,7 +18,6 @@ from pydantic import BaseModel, field_validator
 from app.agent import run_agent, session_settings
 from app.config import ROOT, Settings, bounded_integer
 from app.meeting_tools import MeetingState
-from app.meeting_url import validate_meeting_url
 from app.realtime import RealtimeError
 from app.recall_client import RecallClient, RecallError
 
@@ -109,7 +110,34 @@ class MeetingRequest(BaseModel):
     @field_validator("meeting_url")
     @classmethod
     def validate_meeting_url(cls, value: str) -> str:
-        return validate_meeting_url(value)
+        url = value.strip()
+        error_message = "Enter a direct HTTPS meeting link from Zoom, Google Meet, Microsoft Teams, or Webex."
+        try:
+            parsed = urlsplit(url)
+            port = parsed.port
+        except ValueError:
+            raise ValueError(error_message) from None
+        if (
+            parsed.scheme != "https"
+            or parsed.username is not None
+            or port not in (None, 443)
+            or "\\" in url
+            or any(char.isspace() or ord(char) < 32 for char in url)
+            or not parsed.path.strip("/")
+        ):
+            raise ValueError(error_message)
+
+        host = parsed.hostname or ""
+        if host == "meet.google.com":
+            if parsed.fragment or not re.fullmatch(r"/[a-z]{3}-[a-z]{4}-[a-z]{3}/?", parsed.path):
+                raise ValueError(error_message)
+            return f"https://meet.google.com{parsed.path.rstrip('/')}"
+        if host in {
+            "teams.microsoft.com", "teams.cloud.microsoft", "teams.live.com", "zoom.us", "webex.com",
+        } or host.endswith((".zoom.us", ".webex.com")):
+            # Keep provider-specific passcodes and context intact for Recall.
+            return url
+        raise ValueError(error_message)
 
 
 @app.get("/")
