@@ -82,11 +82,11 @@ Keep this process running, then open [the launcher](http://127.0.0.1:8003). Keep
 
 ### 5. Send the agent to a meeting
 
-For your first test, start a Google Meet call at [meet.new](https://meet.new/). You can also use a link from any supported platform. Paste the direct meeting link into the launcher, select **Send agent**, and admit **openai demo** if prompted. Wait for the launcher to report **Ready**.
+For your first test, start a Google Meet call at [meet.new](https://meet.new/). Paste the direct meeting link into the launcher, select **Send agent**, and admit **openai demo** if prompted. Wait for the launcher to report **Ready**.
 
 ### 6. Try the agent
 
-Use a public HTTPS URL that loads without signing in, and verify the page appears in the meeting. Use Zoom, Google Meet, or Microsoft Teams for the chat commands and loading notices. [Recall chat support](https://docs.recall.ai/docs/sending-chat-messages)
+Use a public HTTPS URL that loads without signing in, and verify the page appears in the meeting. Try the chat commands in a meeting that allows bot chat. [Recall chat support](https://docs.recall.ai/docs/sending-chat-messages)
 
 | Try saying |
 | --- |
