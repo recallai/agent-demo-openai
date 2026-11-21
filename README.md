@@ -1,6 +1,6 @@
 # OpenAI meeting agent
 
-Send an interactive meeting agent to Zoom, Google Meet, Microsoft Teams, or Webex. It answers questions aloud and takes spoken requests to share a webpage, post in meeting chat where available, or leave the call.
+Send an interactive meeting agent to Google Meet, Zoom, Microsoft Teams, or Webex. It answers questions aloud and takes spoken requests to share a webpage, post in meeting chat where available, or leave the call.
 
 Recall streams meeting audio directly to OpenAI Realtime. The app uses a server-side connection to handle meeting tools, mute, and listening controls. See [Recall's OpenAI integration](https://docs.recall.ai/docs/meeting-agents-openai).
 
@@ -82,7 +82,7 @@ Keep this process running, then open [the launcher](http://127.0.0.1:8003). Keep
 
 ### 5. Send the agent to a meeting
 
-Paste a Zoom, Google Meet, Microsoft Teams, or Webex link into the launcher and select **Send agent**. Admit **openai demo** if prompted and wait for the launcher to report **Ready**.
+For your first test, start a Google Meet call at [meet.new](https://meet.new/). You can also use a link from any supported platform. Paste the direct meeting link into the launcher, select **Send agent**, and admit **openai demo** if prompted. Wait for the launcher to report **Ready**.
 
 ### 6. Try the agent
 
