@@ -2,18 +2,16 @@
 
 import asyncio
 import logging
-import re
 import time
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from urllib.parse import urlsplit
 from uuid import uuid4
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict
 
 from app.agent import run_agent, session_settings
 from app.config import ROOT, Settings, bounded_integer
@@ -30,7 +28,7 @@ class DemoSession:
     id: str = field(default_factory=lambda: uuid4().hex)
     bot_id: str | None = None
     status: str = "connecting"
-    message: str = "Requesting the agent. Admit openai demo in Google Meet if prompted."
+    message: str = "Requesting the agent. Admit openai demo if prompted."
     state: MeetingState = field(default_factory=MeetingState)
     task: asyncio.Task | None = None
 
@@ -105,16 +103,9 @@ app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost
 
 
 class MeetingRequest(BaseModel):
-    meeting_url: str
+    model_config = ConfigDict(str_strip_whitespace=True)
 
-    @field_validator("meeting_url")
-    @classmethod
-    def validate_meeting_url(cls, value: str) -> str:
-        parsed = urlsplit(value.strip())
-        if (parsed.scheme != "https" or parsed.netloc != "meet.google.com"
-                or not re.fullmatch(r"/[a-z]{3}-[a-z]{4}-[a-z]{3}/?", parsed.path)):
-            raise ValueError("Enter a Google Meet URL, such as https://meet.google.com/abc-defg-hij.")
-        return f"https://meet.google.com{parsed.path.rstrip('/')}"
+    meeting_url: str
 
 
 @app.get("/")

@@ -1,10 +1,12 @@
 # OpenAI meeting agent
 
-A small Google Meet demo using [Recall.ai's native OpenAI integration](https://docs.recall.ai/docs/meeting-agents-openai), with OpenAI Realtime voice, public webpage sharing, and nine meeting tools.
+Send an interactive meeting agent to Google Meet, Zoom, Microsoft Teams, or Webex. It answers questions aloud and takes spoken requests to share a webpage, post in meeting chat where available, or leave the call.
+
+Recall streams meeting audio directly to OpenAI Realtime. The app uses a server-side connection to handle meeting tools, mute, and listening controls. See [Recall's OpenAI integration](https://docs.recall.ai/docs/meeting-agents-openai).
 
 ## Behavior
 
-Start each request with **“Assistant”** or **“openai demo”**, followed by a question or command. The agent joins silently and posts an introduction in meeting chat. Every accepted tool provides chat feedback; requested messages and links are their own confirmation.
+Start each request with **“Assistant”** or **“openai demo”**, followed by a question or command. The agent joins silently. Where chat is available, it posts an introduction and tool feedback there. Requested messages and links are their own confirmation.
 
 | Action | Tool |
 | --- | --- |
@@ -25,7 +27,8 @@ Mute controls speech only; tools remain available. Stop listening pauses request
 - Python 3.12 and [uv](https://docs.astral.sh/uv/getting-started/installation/).
 - A Recall workspace and its regional REST API key.
 - An OpenAI project key with access to the selected Realtime model and `gpt-4o-mini-transcribe`, configured in both Recall's dashboard and the local environment.
-- A Google account to host a meeting and a network that permits outbound HTTPS and secure WebSocket connections.
+- A meeting link and permission to admit the bot if prompted.
+- A network that permits outbound HTTPS and secure WebSocket connections.
 
 ## Quickstart
 
@@ -79,11 +82,11 @@ Keep this process running, then open [the launcher](http://127.0.0.1:8003). Keep
 
 ### 5. Send the agent to a meeting
 
-Create and join a meeting at [meet.new](https://meet.new/). Paste its URL into the launcher, select **Send agent**, and admit **openai demo** if prompted. Wait for the launcher to report **Ready**. The agent also posts an introduction in meeting chat; a failed chat post does not end the session.
+For your first test, start a Google Meet call at [meet.new](https://meet.new/). Paste the direct meeting link into the launcher, select **Send agent**, and admit **openai demo** if prompted. Wait for the launcher to report **Ready**.
 
 ### 6. Try the agent
 
-Use a public HTTPS URL that does not require authentication. Sharing requests post a short loading notice; verify the actual page in the meeting.
+Use a public HTTPS URL that loads without signing in, and verify the page appears in the meeting. Try the chat commands in a meeting that allows bot chat. [Recall chat support](https://docs.recall.ai/docs/sending-chat-messages)
 
 | Try saying |
 | --- |
@@ -117,7 +120,7 @@ After the bot leaves, stop the process with Ctrl+C. The session defaults to 10 m
 | `app/request_filter.py` | Recognize agent addresses and the standalone restart command. |
 | `app/config.py` | Load and validate environment settings. |
 
-Recall creates a four-core Google Meet bot with `output_media.audio.kind = "openai"`, sends audio directly to OpenAI, and plays the response into the meeting. The app retains the bot ID returned by Create Bot.
+Recall creates a four-core bot on each supported platform with `output_media.audio.kind = "openai"`. Recall sends audio directly to OpenAI and plays the response into the meeting. The app retains the bot ID returned by Create Bot.
 
 The launcher finds the call ID by querying the bot's `openai_session_created` log through Recall's undocumented `POST /api/v1/logs` endpoint. It uses that ID to attach a server-side connection for tools and response control. Recall carries the meeting audio directly to and from OpenAI. [OpenAI server controls](https://developers.openai.com/api/docs/guides/voice-server-controls#with-webrtc)
 
