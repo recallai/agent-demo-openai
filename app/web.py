@@ -5,14 +5,13 @@ import logging
 import time
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from urllib.parse import urlsplit
 from uuid import uuid4
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict
 
 from app.agent import run_agent, session_settings
 from app.config import ROOT, Settings, bounded_integer
@@ -104,24 +103,9 @@ app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost
 
 
 class MeetingRequest(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
     meeting_url: str
-
-    @field_validator("meeting_url")
-    @classmethod
-    def check_meeting_host(cls, value: str) -> str:
-        url = value.strip()
-        try:
-            host = urlsplit(url).hostname or ""
-        except ValueError:
-            host = ""
-
-        domains = (
-            "meet.google.com", "zoom.us", "zoom.com", "zoom-x.de",
-            "teams.microsoft.com", "teams.cloud.microsoft", "teams.live.com", "webex.com",
-        )
-        if any(host == domain or host.endswith(f".{domain}") for domain in domains):
-            return url
-        raise ValueError("Enter a meeting link from Google Meet, Zoom, Microsoft Teams, or Webex.")
 
 
 @app.get("/")
